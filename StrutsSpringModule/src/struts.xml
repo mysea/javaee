@@ -1,0 +1,19 @@
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.objectFactory" value="spring"/>
+
+    <package name="basicstruts" extends="struts-default">
+        <action name="showProduct" class="action.ProductAction" method="show">
+            <result name="show">show.jsp</result>
+        </action>
+        <action name="addProduct" class="action.ProductAction" method="add">
+            <result name="show">show.jsp</result>
+        </action>
+        <action name="listProduct" class="action.ProductAction" method="list">
+            <result name="list">list.jsp</result>
+        </action>
+    </package>
+</struts>

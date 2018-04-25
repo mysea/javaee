@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+   http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+   http://www.springframework.org/schema/tx
+   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <!--scope属性告知Spring用非单例模式管理action-->
+    <bean name="productActionBean" scope="prototype" class="action.ProductAction">
+        <property name="productService" ref="productServiceImpl" />
+    </bean>
+
+    <bean name="productServiceImpl" class="service.impl.ProductServiceImpl">
+        <property name="productDao" ref="productDaoImpl" />
+    </bean>
+    <bean name="productDaoImpl" class="dao.impl.ProductDaoImpl">
+        <property name="sessionFactory" ref="sf" />
+    </bean>
+
+    <bean name="sf"
+          class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="ds" />
+        <property name="mappingResources">
+            <list>
+                <value>hbm/Product.hbm.xml</value>
+            </list>
+        </property>
+        <!--自动更新表结构失效时使用-->
+        <property name="schemaUpdate">
+            <value>true</value>
+        </property>
+
+        <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=org.hibernate.dialect.MySQLDialect
+                hibernate.show_sql=true
+                hbm2ddl.auto=update
+            </value>
+        </property>
+    </bean>
+
+    <bean name="ds"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+
+    <!--事务管理-->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sf"/>
+    </bean>
+
+    <tx:advice id="txadvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="del*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="edit*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="list*" propagation="REQUIRED" rollback-for="Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut id="serviceMethod" expression="execution(* service.*.*(..))"/>
+        <aop:advisor pointcut-ref="serviceMethod" advice-ref="txadvice"/>
+    </aop:config>
+
+
+
+
+
+
+
+
+</beans>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.multipart.maxsize" value="10240000"/>
+
+    <package name="basicstruts" extends="struts-default">
+        <interceptors>
+            <interceptor name="dateInterceptor" class="interceptor.DateInterceptor"/>
+        </interceptors>
+
+
+        <action name="index">
+            <result>index.jsp</result>
+        </action>
+
+        <!--<action name="*Product" class="action.ProductAction" method="{1}">-->
+            <!--<result name="show">show.jsp</result>-->
+            <!--<result name="list">list.jsp</result>-->
+        <!--</action>-->
+
+        <!--<action name="showProduct" class="action.ProductAction" method="show">-->
+            <!--<result name="show">show.jsp</result>-->
+        <!--</action>-->
+
+        <action name="addProduct" class="action.ProductAction" method="add">
+            <result name="input">addProduct.jsp</result>
+            <result name="show">show.jsp</result>
+        </action>
+
+        <action name="upload" class="action.UploadAction" method="upload">
+            <result name="success">success.jsp</result>
+        </action>
+
+        <!--<action name="listProduct" class="action.ProductAction" method="list">-->
+            <!--<result name="list">list.jsp</result>-->
+        <!--</action>-->
+
+        <!--<action name="listCategory" class="action.ProductAction" method="listCategory">-->
+            <!--<interceptor-ref name="dateInterceptor"/>-->
+            <!--<interceptor-ref name="defaultStack"/>-->
+            <!--<result name="category">category.jsp</result>-->
+        <!--</action>-->
+
+        <action name="addPageProduct" class="action.ProductAction" method="addPage">
+            <result name="addPage" type="redirect">addProduct.jsp?name=${name}</result>
+        </action>
+    </package>
+</struts>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="entity.Category">
+    <!--id作为resultMap的唯一标识，在sql标签中的resultType作为引用-->
+    <resultMap type="Category" id="category">
+        <id column="cid" property="id"/>
+        <result column="cname" property="name"/>
+        <!--property对应集合属性的值，ofType指的是集合中元素的类型-->
+        <collection property="products" ofType="Product">
+            <id column="pid" property="id"/>
+            <result column="pname" property="name"/>
+            <result column="price" property="price"/>
+        </collection>
+    </resultMap>
+
+    <select id="listCategory" resultMap="category">
+        select c.*, p.*, c.id 'cid', p.id 'pid', c.name 'cname', p.name 'pname' from category c left join product p on c.id = p.cid
+    </select>
+</mapper>

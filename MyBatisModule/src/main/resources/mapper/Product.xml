@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="entity.Product">
+    <resultMap id="product" type="Product">
+        <!--因为product和category的id和name字段同名，因此这里要取别名以区分-->
+        <id column="pid" property="id"/>
+        <result column="pname" property="name"/>
+        <result column="price" property="price"/>
+        <!-- 多对一用association，property指的是属性名称，javaType指的是属性类型 -->
+        <association property="category" javaType="Category">
+            <id column="cid" property="id"/>
+            <result column="cname" property="name"/>
+        </association>
+    </resultMap>
+    
+    
+    <!--一般的插入-->
+    <insert id="insertProduct" parameterType="Product">
+        insert into product (name,price) values(#{name},#{price})
+    </insert>
+    <!--插入后获取主键-->
+    <insert id="insertProductReturnId" parameterType="Product">
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into product (name,price) values(#{name},#{price})
+    </insert>
+    <!--批量插入-->
+    <insert id="insertProducts" parameterType="ArrayList">
+          insert into product (name,price) values
+        <foreach collection="list" item="item" index="index" separator=",">
+              (#{item.name},#{item.price})
+        </foreach>
+    </insert>
+
+    <!--删除单条记录-->
+    <delete id="deleteProductById" parameterType="int">
+        delete from product where id = #{id}
+    </delete>
+    <!-- 批量删除 -->
+    <delete id="deleteProducts" parameterType="int[]">
+
+    </delete>
+
+    <!-- 更新 -->
+    <update id="updateProduct" parameterType="Product">
+        update product set name=#{name},price=#{price} where id=#{id}
+    </update>
+
+    <!--查询-->
+    <select id="listProduct" resultType="Product">
+        select * from product
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getProductById" resultType="Product" parameterType="int">
+        select * from product where id = #{id}
+    </select>
+
+    <select id="getProductByCid" resultMap="product">
+        select c.*, p.*, c.id 'cid', p.id 'pid', c.name 'cname', p.name 'pname' from category c left join product p on c.id = p.cid
+    </select>
+</mapper>
